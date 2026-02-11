@@ -33,6 +33,10 @@ While inside `bin` directory run the `nbody.exe` with the following command line
     .\nbody.exe [-n numParticles] [-dt timestep] [-i iterations] [-l cube] [-ms mapsize] [-v0 init_vel]
 ```
 
+The arguments for `-dt` `-l` -`ms` and `v0` must be positive numbers but they can be non-integers, while `-n` must be an integer
+
+The arguments for -l are regarding the initilization of the simulation, the only option right now is `cube` which randomly generates the objects within a cube of size `ms`.
+
 ## Future Extensions
 
 - Implement Barnes-Hut algorithm for improved performance on large particle counts
