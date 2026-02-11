@@ -39,6 +39,13 @@ The arguments for `-dt` `-l` -`ms` and `v0` must be positive numbers but they ca
 
 The arguments for -l are regarding the initilization of the simulation, the only option right now is `cube` which randomly generates the objects within a cube of size `ms`.
 
+## Showcase
+
+![til](./images/galaxy_demo.gif)
+
+1 thousand particles, with random coordinates in a 5x5 cube, all objects have mass one and initial speed between -0.1 and 0.1. This system exhibits a violent collapse behaviour.
+
+
 ## Future Extensions
 
 - Implement Barnes-Hut algorithm for improved performance on large particle counts
