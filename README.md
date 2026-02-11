@@ -25,6 +25,14 @@ A high-performance N-Body simulation implemented in C++, designed to model the d
     cmake --build .
 ```
 
+## How to run it
+
+While inside `bin` directory run the `nbody.exe` with the following command line arguments:
+
+```
+    .\nbody.exe [-n numParticles] [-dt timestep] [-i iterations] [-l cube] [-ms mapsize] [-v0 init_vel]
+```
+
 ## Future Extensions
 
 - Implement Barnes-Hut algorithm for improved performance on large particle counts
