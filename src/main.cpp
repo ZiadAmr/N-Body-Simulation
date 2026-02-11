@@ -1,0 +1,54 @@
+#include <iostream>
+using namespace std;
+
+#include "bodies.h"
+#include "snapshot.h"
+
+#include <format>
+#include <iomanip>
+#include <fstream>
+#include <string>
+
+/*
+TODO:
+    - Command line arguments
+    - Benchmarking suite
+    - Profiling results
+    - README explaining design tradeoffs
+    - Comparison of different integrators
+    - Energy drift analysis
+*/
+
+int main() {
+
+    double dt = 0.0005;
+    int max_iter = 2000;
+
+    Bodies b(5000, 5.0, dt, 0.1);
+
+    std::ofstream file ( "snapshots.bin" , ios::out | ios::binary ) ;
+
+    if(!file) {
+
+        cout << "Error opening file\n" ;
+        return 1 ;
+
+    }
+
+    std::vector<Snapshot> snapshots;
+
+    for(int iteration = 0; iteration < max_iter; iteration++){
+        for(int i = 0; i < b.mass.size(); i++){
+            b.updatePos(i, dt);
+            b.updateAcc(i, dt);
+            b.updateVel(i, dt);
+            
+            snapshots.emplace_back(iteration * dt, i, b.x[i], b.y[i], b.z[i]);
+        }
+    }
+
+    file.write(reinterpret_cast<char*>(&snapshots[0]), sizeof(Snapshot) * snapshots.size() );
+    file.close();
+
+    return 0;
+}

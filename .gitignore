@@ -1,0 +1,5 @@
+# Ignore everything inside the bin directory
+/bin/
+
+# Ignore everything inside the Nbody directory
+/Nbody/
