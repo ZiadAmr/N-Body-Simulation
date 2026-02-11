@@ -3,6 +3,7 @@ using namespace std;
 
 #include "bodies.h"
 #include "snapshot.h"
+#include "SimulationConfig.h"
 
 #include <format>
 #include <iomanip>
@@ -11,7 +12,6 @@ using namespace std;
 
 /*
 TODO:
-    - Command line arguments
     - Benchmarking suite
     - Profiling results
     - README explaining design tradeoffs
@@ -19,12 +19,21 @@ TODO:
     - Energy drift analysis
 */
 
-int main() {
+int main(int argc, char* argv[]) {
 
-    double dt = 0.0005;
-    int max_iter = 2000;
+    SimulationConfig config; 
 
-    Bodies b(5000, 5.0, dt, 0.1);
+    if(!parseArguments(argc, argv, config)) {
+        std::cerr << "Usage: " << argv[0] 
+                  << " [-n numParticles] [-dt timestep] [-i iterations] [-l cube] [-ms mapsize] [-v0 init_vel]\n";
+        return 1;
+
+    }
+
+    double dt = config.dt;
+    int max_iter = config.iterations;
+
+    Bodies b(config.numParticles, config.mapsize, config.dt, config.v0);
 
     std::ofstream file ( "snapshots.bin" , ios::out | ios::binary ) ;
 

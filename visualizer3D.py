@@ -7,7 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 # CONFIGURATION
 # =========================
 filename = "bin/snapshots.bin"
-num_particles = 5000      # <-- SET THIS
+num_particles = 300      # <-- SET THIS
 interval_ms = 30          # animation speed
 marker_size = 2
 # =========================
