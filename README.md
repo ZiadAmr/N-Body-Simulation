@@ -11,6 +11,8 @@ A high-performance N-Body simulation implemented in C++, designed to model the d
 
 - Visualzation-ready output: Outputs particle positions and velocities for further plotting and analysis (can be used by galaxy-demo.py for video output and visualizer3D.py for matplotlib animation)
 
+**Note: to run the visualizer.py, verifier.py or galaxy_demo.py you must manually edit the number of particles in the script.**
+
 ## Getting Started
 
 1. Clone the repository:
