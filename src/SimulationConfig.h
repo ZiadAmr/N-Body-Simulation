@@ -70,8 +70,8 @@ bool parseArguments(int argc, char* argv[], SimulationConfig& config) {
             }
         } else if (arg == "-ms") {
             if (i + 1 < argc) {
-                double ms = std::stod(argv[++i]);
-                if (ms <= 0) {
+                config.mapsize = std::stod(argv[++i]);
+                if (config.mapsize  <= 0) {
                     std::cerr << "Error: mapsize must be positive" << std::endl;
                 }
             } else {
@@ -80,8 +80,8 @@ bool parseArguments(int argc, char* argv[], SimulationConfig& config) {
             }
         } else if (arg == "-v0") {
             if (i + 1 < argc) {
-                double ms = std::stod(argv[++i]);
-                if (ms <= 0) {
+                config.v0 = std::stod(argv[++i]);
+                if (config.v0 <= 0) {
                     std::cerr << "Error: initial velocity must be positive" << std::endl;
                 }
             } else {

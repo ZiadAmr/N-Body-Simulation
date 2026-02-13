@@ -30,6 +30,14 @@ int main(int argc, char* argv[]) {
 
     }
 
+    std::cout << "Simulation Configuration:\n"
+            << "Particles: " << config.numParticles << "\n"
+            << "Timestep: " << config.dt << "\n"
+            << "Iterations: " << config.iterations << "\n"
+            << "Layout: " << config.layout << "\n"
+            << "Map Size: " << config.mapsize << "\n"
+            << "Initial Velocity: " << config.v0 << "\n";
+
     double dt = config.dt;
     int max_iter = config.iterations;
 
@@ -55,6 +63,8 @@ int main(int argc, char* argv[]) {
             snapshots.emplace_back(iteration * dt, i, b.x[i], b.y[i], b.z[i]);
         }
     }
+
+    std::cout << config.numParticles << " Particles over " << config.iterations << " iterations" << std::endl;
 
     file.write(reinterpret_cast<char*>(&snapshots[0]), sizeof(Snapshot) * snapshots.size() );
     file.close();

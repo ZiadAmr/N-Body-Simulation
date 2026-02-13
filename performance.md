@@ -29,9 +29,21 @@ dt = 0.0005
 
 call with flags `-O2 -g` for compiler performance optimization and profiling
 
+Test 3:
+- 
+M = 1 for all particles, random coordinates
+
+N = 10000
+
+2000 timesteps
+
+dt = 0.0005
+
+call with flags `-O2 -g` for compiler performance optimization and profiling
+
 ## Naive Implementation
 
-brute force implementation, no optimizations (except for batching the file writes at the end to reduce sysetm calls)
+brute force implementation, no optimizations (except for batching the file writes at the end to reduce system calls)
 
 Test 1:
 - CPU time: 7.109 s

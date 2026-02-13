@@ -20,10 +20,20 @@ Bodies::Bodies(int n, int map_size, double dt, double v0)
     double vy_avg = 0; 
     double vz_avg = 0; 
 
+    double x_avg = 0, y_avg = 0, z_avg = 0;
+
+    // double x_avg = 0;
+    // double y_avg = 0;
+    // double z_avg = 0; 
+
     for(int i = 0; i < n; i++){
         x[i] = posDistrib(gen);
         y[i] = posDistrib(gen);
         z[i] = posDistrib(gen);
+
+        x_avg += x[i];
+        y_avg += y[i];
+        z_avg += z[i];
 
         mass[i] = 1.0;
 
@@ -36,11 +46,34 @@ Bodies::Bodies(int n, int map_size, double dt, double v0)
         vz_avg += mass[i] * vz[i];
     }
 
+    vx_avg /= n;
+    vy_avg /= n;
+    vz_avg /= n;
+
+    x_avg /= n;
+    y_avg /= n;
+    z_avg /= n;
+
     for(int i = 0; i < n; i++){
         vx[i] -= vx_avg;
         vy[i] -= vy_avg;
         vz[i] -= vz_avg;
+
+        x[i] -= x_avg;
+        y[i] -= y_avg;
+        z[i] -= z_avg;
     }
+
+    // 4. Subtract COM position
+    // x_avg /= n;
+    // y_avg /= n;
+    // z_avg /= n;
+
+    // for (int i = 0; i < n; i++) {
+    //     x[i] -= x_avg;
+    //     y[i] -= y_avg;
+    //     z[i] -= z_avg;
+    // }
 
     for(int i = 0; i < n; i++){
         updateAcc(i, dt);

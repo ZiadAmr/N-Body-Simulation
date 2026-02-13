@@ -7,7 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 # CONFIG
 # =========================
 filename = "bin/snapshots.bin"
-num_particles = 100
+num_particles = 1000
 frame_skip = 3
 fps = 30
 trail_length = 10
@@ -52,9 +52,9 @@ margin = 0.1
 min = min(x.min(), y.min(), z.min())
 max = max(x.max(), y.max(), z.max())
 
-ax.set_xlim(min- margin, max + margin)
-ax.set_ylim(min- margin, max + margin)
-ax.set_zlim(min- margin, max + margin)
+# ax.set_xlim(min - margin, max + margin)
+# ax.set_ylim(min - margin, max + margin)
+# ax.set_zlim(min - margin, max + margin)
 
 # Star scatter (small, bright)
 scat = ax.scatter(x[0], y[0], z[0],
@@ -76,27 +76,6 @@ def update(frame):
 
     # Update stars
     scat._offsets3d = (x[frame], y[frame], z[frame])
-
-    # Remove old trails
-    for tr in trails:
-        tr.remove()
-    trails = []
-
-    # Add motion trails
-    if frame > trail_length:
-        for i in range(num_particles):
-            tr, = ax.plot(
-                x[frame-trail_length:frame, i],
-                y[frame-trail_length:frame, i],
-                z[frame-trail_length:frame, i],
-                color="white",
-                alpha=0.05,
-                linewidth=0.5
-            )
-            trails.append(tr)
-
-    # Cinematic camera rotation
-    # ax.view_init(elev=30, azim=0.2 * frame)
 
     return scat,
 

@@ -8,7 +8,7 @@ from mpl_toolkits.mplot3d import Axes3D
 # =========================
 filename = "bin/snapshots.bin"
 num_particles = 1000      # <-- SET THIS
-interval_ms = 30          # animation speed
+interval_ms = 15         # animation speed
 marker_size = 2
 # =========================
 
