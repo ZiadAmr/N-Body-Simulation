@@ -6,7 +6,7 @@ import imageio
 # CONFIG
 # =========================
 filename = "bin/snapshots.bin"
-num_particles = 1000
+num_particles = 10000
 frame_skip = 3
 fps = 60
 output_file = "galaxy_demo.mp4"
@@ -53,7 +53,7 @@ view.camera = scene.cameras.TurntableCamera(
     distance=20
 )
 
-view.camera.set_range()
+# view.camera.set_range()
 
 scatter = scene.visuals.Markers()
 scatter.set_gl_state("translucent", depth_test=True)

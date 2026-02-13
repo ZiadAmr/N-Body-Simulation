@@ -32,8 +32,10 @@ A high-performance N-Body simulation implemented in C++, designed to model the d
 While inside `bin` directory run the `nbody.exe` with the following command line arguments:
 
 ```
-    .\nbody.exe [-n numParticles] [-dt timestep] [-i iterations] [-l cube] [-ms mapsize] [-v0 init_vel]
+    .\nbody.exe [-n numParticles] [-dt timestep] [-i iterations] [-l cube] [-ms mapsize] [-v0 init_vel] [-q virial_ratio]
 ```
+
+The argument `-q` for virial ratio is a positive number is the ratio of the total kinetic energy to the magnitude of graviational potential energy. At 0.5 the generated system is stable, while larger values lead to expansion as cal be seen in `vidoes/expansion.mp4` and smaller values lead to collapse as can be seen in `videos/violent_collapse.mp4`.
 
 The arguments for `-dt` `-l` -`ms` and `v0` must be positive numbers but they can be non-integers, while `-n` must be an integer
 

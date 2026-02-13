@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 # -------- CONFIG --------
 filename = "bin/snapshots.bin"
-num_particles = 3      # <-- set this
+num_particles = 10000     # <-- set this
 G = 1.0
 mass = 1.0               # per particle
 softening2 = 0.01         # must match simulation
@@ -45,6 +45,14 @@ def potential_energy(x, y, z):
         U -= G * mass * mass * np.sum(1.0 / r)
     return U
 
+def potential_energy_vectorized(x, y, z):
+    r2 = (x[:, None] - x[None, :])**2 + \
+         (y[:, None] - y[None, :])**2 + \
+         (z[:, None] - z[None, :])**2 + softening2
+    inv_r = np.where(np.triu(np.ones_like(r2), 1), 1.0 / np.sqrt(r2), 0.0)
+    U = -G * mass * mass * np.sum(inv_r)
+    return U
+
 # Estimate velocities using finite differences
 dt = t[1] - t[0]
 
@@ -58,7 +66,7 @@ U = np.zeros(num_timesteps)
 
 for k in range(num_timesteps):
     K[k] = kinetic_energy(vx[k], vy[k], vz[k])
-    U[k] = potential_energy(x[k], y[k], z[k])
+    U[k] = potential_energy_vectorized(x[k], y[k], z[k])
     E[k] = K[k] + U[k]
 
 # -------- PLOT --------
