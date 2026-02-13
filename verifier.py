@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 # -------- CONFIG --------
 filename = "bin/snapshots.bin"
-num_particles = 1000      # <-- set this
+num_particles = 3      # <-- set this
 G = 1.0
 mass = 1.0               # per particle
 softening2 = 0.01         # must match simulation

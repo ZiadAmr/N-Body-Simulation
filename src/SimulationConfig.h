@@ -13,6 +13,8 @@ struct SimulationConfig
     double mapsize = 1.0;
     double v0 = 0.1;
     std::string layout = "cube";
+    bool benchmark = false;
+    double q = 0.5;
 };
 
 bool parseArguments(int argc, char* argv[], SimulationConfig& config) {
@@ -73,6 +75,7 @@ bool parseArguments(int argc, char* argv[], SimulationConfig& config) {
                 config.mapsize = std::stod(argv[++i]);
                 if (config.mapsize  <= 0) {
                     std::cerr << "Error: mapsize must be positive" << std::endl;
+                    return false;
                 }
             } else {
                 std::cerr << "Error: -ms requires a value.\n";
@@ -83,11 +86,25 @@ bool parseArguments(int argc, char* argv[], SimulationConfig& config) {
                 config.v0 = std::stod(argv[++i]);
                 if (config.v0 <= 0) {
                     std::cerr << "Error: initial velocity must be positive" << std::endl;
+                    return false;
                 }
             } else {
                 std::cerr << "Error: -v0 requires a value.\n";
                 return false;
-            }           
+            } 
+        } else if (arg == "-q") {
+            if (i + 1 < argc) {
+                config.q = std::stod(argv[++i]);
+                if(config.q <= 0){
+                    std::cerr << "Error: virial ratio Q must be positive" << std::endl;
+                    return false;
+                }
+            } else {
+                std::cerr << "Error: -q requires a value. \n";
+                return false;
+            }
+        } else if (arg == "--benchmark") {
+            config.benchmark = true;
         } else {
             std::cerr << "Unknown argument: " << arg << "\n";
             return false;

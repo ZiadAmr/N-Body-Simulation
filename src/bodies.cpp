@@ -4,7 +4,7 @@
 #include <cmath>
 #include <random>
 
-Bodies::Bodies(int n, int map_size, double dt, double v0)
+Bodies::Bodies(int n, int map_size, double dt, double q, double v0)
     :x(n), y(n), z(n),
     vx(n), vy(n), vz(n),
     ax(n), ay(n), az(n),
@@ -46,6 +46,36 @@ Bodies::Bodies(int n, int map_size, double dt, double v0)
         vz_avg += mass[i] * vz[i];
     }
 
+    // scaling velocities
+    double K = 0;
+    double U = 0;
+    for(int i = 0; i < n; i++){
+        K += 0.5 * mass[i] * (vx[i]*vx[i] + vy[i]*vy[i] + vz[i]*vz[i]);
+    }
+
+    for(int i = 0; i < n; i++){
+        for(int j = i+1; j < n; j++){
+            double dx = x[i] - x[j];
+            double dy = y[i] - y[j];
+            double dz = z[i] - z[j];
+        
+            double r2 = dx*dx + dy*dy + dz*dz + eps2;
+            double inv_r = 1.0 / sqrt(r2);
+
+            U -= mass[i] * mass[j] * inv_r;
+        }
+    }
+
+    double target_k = q * std::abs(U);
+
+    double scale = std::sqrt( target_k / K);
+
+    for(int i = 0; i < n; i++){
+        vx[i] *= scale;
+        vy[i] *= scale;
+        vz[i] *= scale;
+    }
+
     vx_avg /= n;
     vy_avg /= n;
     vz_avg /= n;
@@ -63,17 +93,6 @@ Bodies::Bodies(int n, int map_size, double dt, double v0)
         y[i] -= y_avg;
         z[i] -= z_avg;
     }
-
-    // 4. Subtract COM position
-    // x_avg /= n;
-    // y_avg /= n;
-    // z_avg /= n;
-
-    // for (int i = 0; i < n; i++) {
-    //     x[i] -= x_avg;
-    //     y[i] -= y_avg;
-    //     z[i] -= z_avg;
-    // }
 
     for(int i = 0; i < n; i++){
         updateAcc(i, dt);
@@ -105,7 +124,6 @@ void Bodies::updateAcc(int n, double dt) // execute after updatePos has been exe
         double dy = y[i] - y[n];
         double dz = z[i] - z[n];
 
-        double eps2 = 0.01;
         double r2 = dx*dx + dy*dy + dz*dz + eps2;
         double inv_r = 1.0 / sqrt(r2);
         double inv_r3 = inv_r * inv_r * inv_r;

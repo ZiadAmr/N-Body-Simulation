@@ -6,7 +6,7 @@
 class Bodies
 {
     public:
-        Bodies(int n, int map_size, double dt=0.001, double v0=0.1);
+        Bodies(int n, int map_size, double dt=0.001, double q=0.5, double v0=0.1);
 
         std::vector<double> x, y, z;
         std::vector<double> vx, vy, vz;
@@ -17,6 +17,9 @@ class Bodies
         void updatePos(int n, double dt);
         void updateAcc(int n, double dt);
         void updateVel(int n, double dt);
+
+    private:
+        double eps2 = 0.01;
 
 };
 
