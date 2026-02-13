@@ -6,11 +6,11 @@ import imageio
 # CONFIG
 # =========================
 filename = "bin/snapshots.bin"
-num_particles = 10000
+num_particles = 1000
 frame_skip = 3
 fps = 60
 output_file = "galaxy_demo.mp4"
-canvas_size = (900, 900)
+canvas_size = (912, 912)
 # =========================
 
 # =========================
@@ -83,7 +83,7 @@ writer = imageio.get_writer(
     output_file,
     fps=fps,
     codec="libx264",
-    quality=8,          # 0–10 (10 = best quality)
+    quality=10,          # 0–10 (10 = best quality)
     pixelformat="yuv420p"
 )
 

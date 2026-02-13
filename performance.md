@@ -13,7 +13,7 @@ N = 1000
 
 dt = 0.0005
 
-call with flags `-O2 -g` for compiler performance optimization and profiling
+call with flags `-O3 -g` for compiler performance optimization and profiling
 
 Test 2
 -
@@ -27,7 +27,7 @@ N = 5000
 
 dt = 0.0005
 
-call with flags `-O2 -g` for compiler performance optimization and profiling
+call with flags `-O3 -g` for compiler performance optimization and profiling
 
 Test 3:
 - 
@@ -39,18 +39,23 @@ N = 10000
 
 dt = 0.0005
 
-call with flags `-O2 -g` for compiler performance optimization and profiling
+call with flags `-O3 -g` for compiler performance optimization and profiling
 
 ## Naive Implementation
 
 brute force implementation, no optimizations (except for batching the file writes at the end to reduce system calls)
 
-Test 1:
-- CPU time: 7.109 s
-- `Bodies::updateAcc`: 6.931 s, 97.5% of CPU time
-- `NtWriteFile`: 0.082 s, 1.2% of CPU time
+Test 1: `nbody -n 1000 -i 2000`
+- CPU time: 7.352 s
+- `Bodies::updateAcc`: 7.081 s, 98.7% of CPU time
+- `NtWriteFile`: 0.093 s, 1.3% of CPU time
 
-Test 2:
+Test 2: `nbody -n 5000 -i 2000`
 - CPU time: 190.169 s
 - `Bodies::updateAcc`: 189.669 s, 99.7% of CPU time
 - `NtWriteFile`: 0.201 s, 0.1% of CPU time
+
+<!-- Test 3: `nbody -n 10000 -i 2000`
+- CPU time: 190.169 s
+- `Bodies::updateAcc`: 189.669 s, 99.7% of CPU time
+- `NtWriteFile`: 0.201 s, 0.1% of CPU time -->

@@ -26,11 +26,27 @@ void run_simulation(SimulationConfig config, std::vector<Snapshot>& snapshots){
     Bodies b(config.numParticles, config.mapsize, config.dt, config.q, config.v0);
 
     for(int iteration = 0; iteration < max_iter; iteration++){
-        for(int i = 0; i < b.mass.size(); i++){
-            b.updatePos(i, dt);
-            b.updateAcc(i, dt);
-            b.updateVel(i, dt);
+        // for(int i = 0; i < b.mass.size(); i++){
+        //     b.updatePos(i, dt);
+        //     b.updateAcc(i, dt);
+        //     b.updateVel(i, dt);
             
+        //     snapshots.emplace_back(iteration * dt, i, b.x[i], b.y[i], b.z[i]);
+        // }
+
+        for(int i = 0; i < config.numParticles; i++){
+            b.updatePos(i, dt);
+        }
+
+        for(int i = 0; i < config.numParticles; i++){
+            b.updateAcc(i, dt);
+        }
+
+        for(int i = 0; i < config.numParticles; i++){
+            b.updateVel(i, dt);
+        }
+
+        for(int i = 0; i < config.numParticles; i++){
             snapshots.emplace_back(iteration * dt, i, b.x[i], b.y[i], b.z[i]);
         }
     }
