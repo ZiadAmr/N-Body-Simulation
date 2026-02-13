@@ -43,6 +43,12 @@ The arguments for -l are regarding the initilization of the simulation, the only
 
 ![til](./images/galaxy_demo.gif)
 
+Below is output from `galaxy_demo_pyvis.py` for 1 thousand particles over 2000 timesteps.
+
+<video src="./images/galaxy_demo.mp4" controls="controls" width="100%" height="auto">
+
+<!-- ![til](./images/galaxy_demo.mp4) -->
+
 1 thousand particles, with random coordinates in a 5x5 cube, all objects have mass one and initial speed between -0.1 and 0.1. This system exhibits a violent collapse behaviour.
 
 

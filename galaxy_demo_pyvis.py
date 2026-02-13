@@ -64,11 +64,11 @@ scatter.set_data(
     size=3
 )
 
-scatter.set_gl_state(
-    blend=True,
-    depth_test=True,
-    blend_func=('src_alpha', 'one')
-)
+# scatter.set_gl_state(
+#     blend=True,
+#     depth_test=True,
+#     blend_func=('src_alpha', 'one')
+# )
 
 view.add(scatter)
 
