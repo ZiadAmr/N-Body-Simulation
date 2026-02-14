@@ -2,11 +2,12 @@
 #define BODIES_H
 
 #include <vector>
+#include <string>
 
 class Bodies
 {
     public:
-        Bodies(int n, int map_size, double dt=0.001, double q=0.5, double v0=0.1);
+        Bodies(std::string initType, int n, double map_size, double dt=0.001, double q=0.5, double v0=0.1);
 
         std::vector<double> x, y, z;
         std::vector<double> vx, vy, vz;
@@ -18,8 +19,14 @@ class Bodies
         void updateAcc(int n, double dt);
         void updateVel(int n, double dt);
 
-    private:
+        void updateAcc2(int n, double dt);
+
         double eps2 = 0.01;
+    private:
+        void cubeInitializer(int n, double map_size, double dt, double q, double v0);
+        void plummerInitializer(int n, double map_size, double dt, double q, double v0);
+        void sphereInitializer(int n, double map_size, double dt, double q, double v0);
+        void diskInitializer(int n, double disk_height, double disk_radius, double dt, double q, double v0);
 
 };
 

@@ -39,11 +39,13 @@ The argument `-q` for virial ratio is a positive number is the ratio of the tota
 
 The arguments for `-dt` `-l` -`ms` and `v0` must be positive numbers but they can be non-integers, while `-n` must be an integer
 
-The arguments for -l are regarding the initilization of the simulation, the only option right now is `cube` which randomly generates the objects within a cube of size `ms`.
+The arguments for -l are regarding the initilization of the simulation, these are the available options: 
+- `cube` particles are randomly generated within a cube of size `2msx2ms`.
+- `plummer`:  particles are initialized in a sphere that is denser in the center.
+- `sphere`: particles are randomly and uniformly generated within a sphere of radius $r = ms \sqrt[3]{u}$ where u is a point in a uniform distribution $[0,1)$
+- `disk`: (not correct yet) particles are initialized in a rotating, flattened disk with an exponential density profile. Velocities are set to produce stable rotation, approximating a realistic spiral galaxy.
 
 ## Showcase
-
-![til](./images/galaxy_demo.gif)
 
 Below is output from `galaxy_demo_pyvis.py` for 1 thousand particles over 2000 timesteps.
 
@@ -55,3 +57,14 @@ https://github.com/user-attachments/assets/6bb998d4-ef7c-43fd-bf92-3e9ef505f9fa
 
 - Implement Barnes-Hut algorithm for improved performance on large particle counts
 - Add collision detection and merging for astrophysical realism 
+- Implement initial condition modes:
+    - Hernquist Profile
+    - Isothermal Sphere
+    - NFW Halo
+    - Rotation Sphere
+    - Binary Galaxy System
+    - Exponential Disk Galaxy
+    - Multi-component Galaxy
+    - Jeans Equation Initialization
+    - Cosmological Inittial Conditions
+

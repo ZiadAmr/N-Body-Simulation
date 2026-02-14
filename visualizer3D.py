@@ -7,7 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 # CONFIGURATION
 # =========================
 filename = "bin/snapshots.bin"
-num_particles = 1000      # <-- SET THIS
+num_particles = 5000      # <-- SET THIS
 interval_ms = 15         # animation speed
 marker_size = 2
 # =========================
@@ -52,9 +52,9 @@ margin = 0.1
 min = min(x.min(), y.min(), z.min())
 max = max(x.max(), y.max(), z.max())
 
-ax.set_xlim(min- margin, max + margin)
-ax.set_ylim(min- margin, max + margin)
-ax.set_zlim(min- margin, max + margin)
+ax.set_xlim(-5,5)
+ax.set_ylim(-5,5)
+ax.set_zlim(-5,5)
 
 ax.set_xlabel("X")
 ax.set_ylabel("Y")

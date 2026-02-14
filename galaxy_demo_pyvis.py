@@ -28,6 +28,7 @@ dtype = np.dtype([
 data = np.fromfile(filename, dtype=dtype)
 num_timesteps = len(data) // num_particles
 
+
 x = data["x"].reshape(num_timesteps, num_particles)
 y = data["y"].reshape(num_timesteps, num_particles)
 z = data["z"].reshape(num_timesteps, num_particles)
@@ -50,25 +51,40 @@ view.camera = scene.cameras.TurntableCamera(
     fov=60,
     azimuth=45,
     elevation=30,
-    distance=20
+    distance=10
 )
 
-# view.camera.set_range()
+view.camera.center = np.mean(positions[0], axis=0)
+
+r = np.linalg.norm(positions[0] - view.camera.center, axis=1)
+view.camera.distance = np.percentile(r, 95) * 2.5
+
+
+# Compute center-of-mass
+com = np.mean(positions[0], axis=0)
+
+# Compute distances from COM
+r = np.linalg.norm(positions[0] - com, axis=1)
+
+# Use 95th percentile as camera distance
+distance = np.percentile(r, 95) * 2.5  # factor to give padding
+view.camera.distance = distance
+
+# Optionally center camera on COM
+view.camera.center = com
+
+view.camera.set_range()
 
 scatter = scene.visuals.Markers()
-scatter.set_gl_state("translucent", depth_test=True)
+scatter.set_gl_state("translucent", 
+                    depth_test=True,
+                    blend_func=('src_alpha', 'one'))
 
 scatter.set_data(
     positions[0],
     face_color=(1, 1, 1, 0.9),
-    size=3
+    size=6
 )
-
-# scatter.set_gl_state(
-#     blend=True,
-#     depth_test=True,
-#     blend_func=('src_alpha', 'one')
-# )
 
 view.add(scatter)
 

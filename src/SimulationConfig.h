@@ -18,7 +18,7 @@ struct SimulationConfig
 };
 
 bool parseArguments(int argc, char* argv[], SimulationConfig& config) {
-    const std::unordered_set<std::string> allowedLayouts = {"cube"};
+    const std::unordered_set<std::string> allowedLayouts = {"cube", "plummer", "sphere", "disk"};
 
     for(int i = 1; i < argc; ++i){
         std::string arg = argv[i];

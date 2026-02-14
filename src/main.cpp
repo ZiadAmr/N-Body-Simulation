@@ -9,6 +9,7 @@ using namespace std;
 #include <iomanip>
 #include <fstream>
 #include <string>
+#include <cmath>
 
 /*
 TODO:
@@ -17,30 +18,40 @@ TODO:
     - README explaining design tradeoffs
     - Comparison of different integrators
     - Energy drift analysis
+    - Initializers:
+        - Hernquist Profile
+        - Isothermal Sphere
+        - NFW Halo
+        - Rotating Sphere
+        - Binary galaxy system
+        - Exponential Disk Galaxy
+        - Multi-component Galaxy
+        - Jeans Equation Initialization
+        - Cosmological Initial Conditions
 */
 
 void run_simulation(SimulationConfig config, std::vector<Snapshot>& snapshots){
     double dt = config.dt;
     int max_iter = config.iterations;
 
-    Bodies b(config.numParticles, config.mapsize, config.dt, config.q, config.v0);
+    Bodies b(config.layout, config.numParticles, config.mapsize, config.dt, config.q, config.v0);
 
     for(int iteration = 0; iteration < max_iter; iteration++){
-        // for(int i = 0; i < b.mass.size(); i++){
-        //     b.updatePos(i, dt);
-        //     b.updateAcc(i, dt);
-        //     b.updateVel(i, dt);
-            
-        //     snapshots.emplace_back(iteration * dt, i, b.x[i], b.y[i], b.z[i]);
-        // }
 
         for(int i = 0; i < config.numParticles; i++){
             b.updatePos(i, dt);
         }
 
-        for(int i = 0; i < config.numParticles; i++){
-            b.updateAcc(i, dt);
-        }
+
+        std::swap(b.old_ax, b.ax);
+        std::swap(b.old_ay, b.ay);
+        std::swap(b.old_az, b.az);
+
+        std::fill(b.ax.begin(), b.ax.end(), 0.0);
+        std::fill(b.ay.begin(), b.ay.end(), 0.0);
+        std::fill(b.az.begin(), b.az.end(), 0.0);
+
+        b.updateAcc2(config.numParticles, dt);
 
         for(int i = 0; i < config.numParticles; i++){
             b.updateVel(i, dt);
