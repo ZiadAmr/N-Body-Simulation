@@ -7,7 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 # CONFIG
 # =========================
 filename = "bin/snapshots.bin"
-num_particles = 1000
+num_particles = 3
 frame_skip = 3
 fps = 30
 trail_length = 10

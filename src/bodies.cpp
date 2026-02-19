@@ -89,6 +89,7 @@ void Bodies::updateAcc2(int n, double dt)
 
             double r2 = dx*dx + dy*dy + dz*dz + eps2;
             double inv_r = 1.0 / std::sqrt(r2);
+            // double inv_r = invSqrt(r2);
             double inv_r3 = inv_r * inv_r * inv_r;
 
             double s_i = mass_i * inv_r3;
@@ -189,10 +190,7 @@ void Bodies::cubeInitializer(int n, double map_size, double dt, double q, double
         y[i] -= y_avg;
         z[i] -= z_avg;
     }
-
-    for(int i = 0; i < n; i++){
-        updateAcc(i, dt);
-    }
+    updateAcc2(n, dt);
 }
 
 void Bodies::plummerInitializer(int n, double map_size, double dt, double q, double v0)
@@ -272,9 +270,7 @@ void Bodies::plummerInitializer(int n, double map_size, double dt, double q, dou
         vz[i] -= vz_avg;
     }
 
-    for(int i = 0; i < n; i++){
-        updateAcc(i, dt);
-    }
+    updateAcc2(n, dt);
 
 }
 
@@ -458,6 +454,5 @@ void Bodies::diskInitializer(int n, double disk_height, double disk_radius, doub
     //     vy[i]*=scale;
     //     vz[i]*=scale;
     // }
-    
-    for(int i=0;i<n;i++) updateAcc(i, dt);
+    updateAcc2(n, dt);
 }

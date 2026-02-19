@@ -15,6 +15,7 @@ using namespace std;
 TODO:
     - Benchmarking suite
     - Profiling results
+    - fast 1/sqrt
     - README explaining design tradeoffs
     - Comparison of different integrators
     - Energy drift analysis

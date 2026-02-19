@@ -27,7 +27,6 @@ class Bodies
         void plummerInitializer(int n, double map_size, double dt, double q, double v0);
         void sphereInitializer(int n, double map_size, double dt, double q, double v0);
         void diskInitializer(int n, double disk_height, double disk_radius, double dt, double q, double v0);
-
 };
 
 

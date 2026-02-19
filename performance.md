@@ -149,3 +149,9 @@ Test 3: `nbody -n 10000 -i 2000`
 - CPU time: 723.588s
 - `Bodies::updateAcc`: 721.224 s, 99.7% of CPU time
 - `NtWriteFile`: 0.246 s, 0.0% of CPU time
+
+## Barnes-Hut Implementation
+
+
+
+
