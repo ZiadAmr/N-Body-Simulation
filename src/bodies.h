@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+#include "tree.h"
+
 class Bodies
 {
     public:
@@ -21,12 +23,16 @@ class Bodies
 
         void updateAcc2(int n, double dt);
 
+        void updateAccBH(int n, double dt, double map_size);
+
         double eps2 = 0.01;
     private:
         void cubeInitializer(int n, double map_size, double dt, double q, double v0);
         void plummerInitializer(int n, double map_size, double dt, double q, double v0);
         void sphereInitializer(int n, double map_size, double dt, double q, double v0);
         void diskInitializer(int n, double disk_height, double disk_radius, double dt, double q, double v0);
+
+        double map_size;
 };
 
 

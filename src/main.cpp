@@ -15,10 +15,10 @@ using namespace std;
 TODO:
     - Benchmarking suite
     - Profiling results
-    - fast 1/sqrt
     - README explaining design tradeoffs
     - Comparison of different integrators
     - Energy drift analysis
+    - add theta (opening angle) to the command line
     - Initializers:
         - Hernquist Profile
         - Isothermal Sphere

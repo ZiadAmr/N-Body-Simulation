@@ -106,6 +106,14 @@ void Bodies::updateAcc2(int n, double dt)
     }
 }
 
+void Bodies::updateAccBH(int n, double dt, double map_size)
+{
+    Tree tree(n, map_size, 0.5);
+    for(int i = 0; i < n; i++){
+        tree.add(this->mass[i], this->x[i], this->y[i], this->z[i]);
+    }
+}
+
 void Bodies::cubeInitializer(int n, double map_size, double dt, double q, double v0)
 {
     std::random_device rd; 

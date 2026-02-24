@@ -19,5 +19,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_executable(nbody
     src/main.cpp
     src/bodies.cpp
+    src/tree.cpp
 )
 
