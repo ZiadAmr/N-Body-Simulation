@@ -3,3 +3,6 @@
 
 # Ignore everything inside the Nbody directory
 /Nbody/
+
+/galaxy-env/
+
