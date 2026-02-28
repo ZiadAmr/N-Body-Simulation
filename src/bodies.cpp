@@ -279,7 +279,6 @@ void Bodies::plummerInitializer(int n, double map_size, double dt, double q, dou
     }
 
     updateAcc2(n, dt);
-
 }
 
 void Bodies::sphereInitializer(int n, double map_size, double dt, double q, double v0)

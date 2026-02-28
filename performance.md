@@ -1,11 +1,15 @@
 # Performance
-This file details the changes in perfomance of the application over the development phase with the following test conditions:
+This file details the changes in perfomance of the application over the development phase with the following test conditions using the perf tool:
 
 Test 1:
 - 
+
+<!-- sudo perf stat -d ./nbody -n 1000 -i 2000 -l plummer -->
+<!-- sudo perf record -F 999 -g ./nbody -n 1000 -i 2000 -l plummer  -->
+
 M = 1 for all particles
 
-random coordinates
+plummer sphere
 
 N = 1000
 
@@ -19,7 +23,7 @@ Test 2
 -
 M = 1 for all particles
 
-random coordinates
+plummer sphere
 
 N = 5000
 
@@ -31,7 +35,9 @@ call with flags `-O3 -g` for compiler performance optimization and profiling
 
 Test 3:
 - 
-M = 1 for all particles, random coordinates
+M = 1 for all particles
+
+plummer sphere
 
 N = 10000
 
@@ -43,77 +49,142 @@ call with flags `-O3 -g` for compiler performance optimization and profiling
 
 ## Naive Implementation
 
+
 brute force implementation, no optimizations (except for batching the file writes at the end to reduce system calls)
 
 Test 1: `nbody -n 1000 -i 2000`
-- CPU time: 7.352 s
-- `Bodies::updateAcc`: 7.081 s, 98.7% of CPU time
-- `NtWriteFile`: 0.093 s, 1.3% of CPU time
+
+- seconds elapsed: 8.075
+- seconds user: 6.203
+- second sys: 0.065
+- 98.37% in `updateAcc`
+
+| Name                    | Measurement   |
+|-------------------------|---------------|
+| task-clock              | 6,268,130,645 (0.74 CPUs utilized) |
+| context-switches        | 109           |
+| cpu-migrations          | 38            |
+| page-faults             | 40,187         |
+| instructions            | 66,828,749,162   |
+| cycles                  | 29,833,369,982   |
+| stalled-cycles-frontend | 305,551,588 (1.10% )   |
+| branches                | 6,120,745,506    |
+| branch-misses           | 18,400,425  (0.32%)    |
+| L1-dcache-loads         | 22,404,177,280   |
+| L1-dcache-load-misses   | 260,628,673 (1.24%)    |
+
+2.24 insn per cycle
+
+<!--
+ Performance counter stats for './nbody -n 1000 -i 2000 -l plummer':
+
+     6,214,099,919      task-clock                       #    0.774 CPUs utilized             
+                91      context-switches                 #   14.644 /sec                      
+                16      cpu-migrations                   #    2.575 /sec                      
+            40,187      page-faults                      #    6.467 K/sec                     
+    66,805,475,114      instructions                     #    2.24  insn per cycle            
+                                                  #    0.00  stalled cycles per insn     (71.41%)
+    29,859,543,339      cycles                           #    4.805 GHz                         (71.42%)
+       327,341,662      stalled-cycles-frontend          #    1.10% frontend cycles idle        (71.42%)
+     6,121,031,432      branches                         #  985.023 M/sec                       (71.44%)
+        19,393,541      branch-misses                    #    0.32% of all branches             (71.46%)
+    22,420,433,782      L1-dcache-loads                  #    3.608 G/sec                       (71.44%)
+       279,125,063      L1-dcache-load-misses            #    1.24% of all L1-dcache accesses   (71.41%)
+
+       8.024819774 seconds time elapsed
+
+       6.139501000 seconds user
+       0.075018000 seconds sys
+-->
 
 Test 2: `nbody -n 5000 -i 2000`
-- CPU time: 180.463 s
-- `Bodies::updateAcc`: 179.700 s, 99.6% of CPU time
-- `NtWriteFile`: 0.094 s, 0.1% of CPU time
+
+- seconds elapsed: 163.962
+- seconds user: 154.414
+- second sys: 0.441
+- 99.36% in `updateAcc`
+
+| Name                    | Measurement   |
+|-------------------------|---------------|
+| task-clock              | 154,857,011,823 (0.944 CPUs utilized) |
+| context-switches        | 1,543          |
+| cpu-migrations          | 141           |
+| page-faults             | 261,776         |
+| instructions            | 1,657,322,051,504   |
+| cycles                  | 737,053,040,065  |
+| stalled-cycles-frontend | 3,269,987,073  (0.44%)  |
+| branches                | 151,118,584,757    |
+| branch-misses           | 148,504,002  (0.10%)  |
+| L1-dcache-loads         | 553,037,464,106  |
+| L1-dcache-load-misses   | 25,304,740,004 (4.58%)     |
+
+2.25 insn per cycle
+
+<!-- 
+ Performance counter stats for './nbody -n 5000 -i 2000 -l plummer':
+
+   154,857,011,823      task-clock                       #    0.944 CPUs utilized             
+             1,543      context-switches                 #    9.964 /sec                      
+               141      cpu-migrations                   #    0.911 /sec                      
+           261,776      page-faults                      #    1.690 K/sec                     
+ 1,657,322,051,504      instructions                     #    2.25  insn per cycle            
+                                                  #    0.00  stalled cycles per insn     (71.43%)
+   737,053,040,065      cycles                           #    4.760 GHz                         (71.43%)
+     3,269,987,073      stalled-cycles-frontend          #    0.44% frontend cycles idle        (71.43%)
+   151,118,584,757      branches                         #  975.859 M/sec                       (71.43%)
+       148,504,002      branch-misses                    #    0.10% of all branches             (71.43%)
+   553,037,464,106      L1-dcache-loads                  #    3.571 G/sec                       (71.43%)
+    25,304,740,004      L1-dcache-load-misses            #    4.58% of all L1-dcache accesses   (71.43%)
+
+     163.962093237 seconds time elapsed
+
+     154.414351000 seconds user
+       0.441203000 seconds sys
+ -->
 
 Test 3: `nbody -n 10000 -i 2000`
-- CPU time: 723.588s
-- `Bodies::updateAcc`: 721.224 s, 99.7% of CPU time
-- `NtWriteFile`: 0.246 s, 0.0% of CPU time
+- seconds elapsed: 648.533
+- seconds user: 628.679
+- second sys: 0.874
+- 99.50% in `updateAcc`
 
-<!-- perf stats on WSL
-    Performance counter stats for './nbody -n 1000 -i 2000':
+| Name                    | Measurement   |
+|-------------------------|---------------|
+| task-clock              | 629,563,644,327  (0.971 CPU utilized) |
+| context-switches        | 7,541          |
+| cpu-migrations          | 1,336          |
+| page-faults             | 523,395        |
+| instructions            | 6,621,930,731,397   |
+| cycles                  | 2,945,020,964,366  |
+| stalled-cycles-frontend | 10,704,554,360 (0.36%)   |
+| branches                | 603,417,424,393    |
+| branch-misses           | 421,692,295   (0.07%)  |
+| L1-dcache-loads         | 2,208,228,038,470 |
+| L1-dcache-load-misses   | 101,288,792,810 (4.59%)     |
 
-           7761.80 msec task-clock:u              #    0.965 CPUs utilized
-                 0      context-switches:u        #    0.000 /sec
-                 0      cpu-migrations:u          #    0.000 /sec
-             40174      page-faults:u             #    5.176 K/sec
-       32159365290      cycles:u                  #    4.143 GHz
-          56355004      stalled-cycles-frontend:u #    0.18% frontend cycles idle
-       84386112145      instructions:u            #    2.62  insn per cycle
-                                                  #    0.00  stalled cycles per insn
-        6027594364      branches:u                #  776.572 M/sec
-           4419592      branch-misses:u           #    0.07% of all branches
+2.25 insn per cycle
 
-       8.039829343 seconds time elapsed
+<!-- 
+ Performance counter stats for './nbody -n 10000 -i 2000 -l plummer':
 
-       7.491532000 seconds user
-       0.270313000 seconds sys
+   629,563,644,327      task-clock                       #    0.971 CPUs utilized             
+             7,541      context-switches                 #   11.978 /sec                      
+             1,336      cpu-migrations                   #    2.122 /sec                      
+           523,395      page-faults                      #  831.362 /sec                      
+ 6,621,930,731,397      instructions                     #    2.25  insn per cycle            
+                                                  #    0.00  stalled cycles per insn     (71.43%)
+ 2,945,020,964,366      cycles                           #    4.678 GHz                         (71.43%)
+    10,704,554,360      stalled-cycles-frontend          #    0.36% frontend cycles idle        (71.43%)
+   603,417,424,393      branches                         #  958.469 M/sec                       (71.43%)
+       421,692,295      branch-misses                    #    0.07% of all branches             (71.43%)
+ 2,208,228,038,470      L1-dcache-loads                  #    3.508 G/sec                       (71.43%)
+   101,288,792,810      L1-dcache-load-misses            #    4.59% of all L1-dcache accesses   (71.43%)
 
-    Performance counter stats for './nbody -n 5000 -i 2000':
+     648.533665802 seconds time elapsed
 
-         189697.18 msec task-clock:u              #    0.981 CPUs utilized
-                 0      context-switches:u        #    0.000 /sec
-                 0      cpu-migrations:u          #    0.000 /sec
-            261763      page-faults:u             #    1.380 K/sec
-      798599108030      cycles:u                  #    4.210 GHz
-         609139318      stalled-cycles-frontend:u #    0.08% frontend cycles idle
-     2102824482679      instructions:u            #    2.63  insn per cycle
-                                                  #    0.00  stalled cycles per insn
-      150203061444      branches:u                #  791.804 M/sec
-          22005966      branch-misses:u           #    0.01% of all branches
-
-     193.319041050 seconds time elapsed
-
-     187.970305000 seconds user
-       1.719276000 seconds sys
-
-             754735.80 msec task-clock:u              #    0.976 CPUs utilized
-                 0      context-switches:u        #    0.000 /sec
-                 0      cpu-migrations:u          #    0.000 /sec
-            523388      page-faults:u             #  693.472 /sec
-     3200592311008      cycles:u                  #    4.241 GHz
-        2154581223      stalled-cycles-frontend:u #    0.07% frontend cycles idle
-     8407747019013      instructions:u            #    2.63  insn per cycle
-                                                  #    0.00  stalled cycles per insn
-      600556126912      branches:u                #  795.717 M/sec
-          45705242      branch-misses:u           #    0.01% of all branches
-
-     772.907086763 seconds time elapsed
-
-     750.797763000 seconds user
-       3.929569000 seconds sys
-
--->
+     628.679401000 seconds user
+       0.874018000 seconds sys
+ -->
 
 ## Naive implementation w/ Optimized force calculation
 
@@ -134,24 +205,148 @@ we do:
 ```
 
 Test 1: `nbody -n 1000 -i 2000`
-- CPU time: 4.957 s
-- `Bodies::updateAcc`: 3.457 s, 69.7% of CPU time
-- `std::vector<double, std::allocator<double>>::operator[]`: 1.320, 26.6% of CPU time
-- `Snapshot::Snapshot`: 0.095s, 1.9% of CPU time
-- `NtWriteFile`: 0.085 s, 1.7% of CPU time
+- seconds elapsed: 5.959
+- seconds user: 3.931
+- seconds sys: 0.1
+- 97.96% in `updateAcc2`
+
+| Name                    | Measurement   |
+|-------------------------|---------------|
+| task-clock              | 4,031,250,441  (0.676 CPU utilized) |
+| context-switches        | 88           |
+| cpu-migrations          | 6         |
+| page-faults             | 40,185       |
+| instructions            | 45,795,954,887   |
+| cycles                  | 19,941,241,813  |
+| stalled-cycles-frontend | 307,073,461 (1.54%)   |
+| branches                | 2,130,274,778    |
+| branch-misses           | 13,091,281  (0.61%)  |
+| L1-dcache-loads         | 17,366,467,031 |
+| L1-dcache-load-misses   | 611,355,425 (3.52%)     |
+
+2.30 insn per cycle
+
+
+
+<!-- 
+ Performance counter stats for './nbody -n 1000 -i 2000 -l plummer':
+
+     4,031,250,441      task-clock                       #    0.676 CPUs utilized             
+                88      context-switches                 #   21.829 /sec                      
+                 6      cpu-migrations                   #    1.488 /sec                      
+            40,185      page-faults                      #    9.968 K/sec                     
+    45,795,954,887      instructions                     #    2.30  insn per cycle            
+                                                  #    0.01  stalled cycles per insn     (71.43%)
+    19,941,241,813      cycles                           #    4.947 GHz                         (71.40%)
+       307,073,461      stalled-cycles-frontend          #    1.54% frontend cycles idle        (71.42%)
+     2,130,274,778      branches                         #  528.440 M/sec                       (71.42%)
+        13,091,281      branch-misses                    #    0.61% of all branches             (71.43%)
+    17,366,467,031      L1-dcache-loads                  #    4.308 G/sec                       (71.46%)
+       611,355,425      L1-dcache-load-misses            #    3.52% of all L1-dcache accesses   (71.45%)
+
+       5.959369217 seconds time elapsed
+
+       3.930731000 seconds user
+       0.100993000 seconds sys
+-->
 
 Test 2: `nbody -n 5000 -i 2000`
-- CPU time: 180.463 s
-- `Bodies::updateAcc`: 179.700 s, 99.6% of CPU time
-- `NtWriteFile`: 0.094 s, 0.1% of CPU time
+- seconds elapsed: 106.935
+- seconds user: 96.935
+- seconds sys: 0.41
+- 99.16% in `updateAcc2`
+
+| Name                    | Measurement   |
+|-------------------------|---------------|
+| task-clock              | 97,346,868,404  (0.913CPU utilized) |
+| context-switches        | 1,320          |
+| cpu-migrations          | 276         |
+| page-faults             | 261,773       |
+| instructions            | 1,130,477,645,097   |
+| cycles                  | 488,360,111,455   |
+| stalled-cycles-frontend | 2,431,809,471 (0.50%)   |
+| branches                | 50,868,465,033   |
+| branch-misses           | 191,977,740  (0.18%)  |
+| L1-dcache-loads         | 427,458,382,842  |
+| L1-dcache-load-misses   | 22,041,827,729 (5.16%)     |
+
+2.31 insn per cycle
+
+5.16% cache miss rate is concerning
+
+<!-- 
+ Performance counter stats for './nbody -n 5000 -i 2000 -l plummer':
+
+    97,346,868,404      task-clock                       #    0.913 CPUs utilized             
+             1,320      context-switches                 #   13.560 /sec                      
+               276      cpu-migrations                   #    2.835 /sec                      
+           261,773      page-faults                      #    2.689 K/sec                     
+ 1,130,477,645,097      instructions                     #    2.31  insn per cycle            
+                                                  #    0.00  stalled cycles per insn     (71.43%)
+   488,360,111,455      cycles                           #    5.017 GHz                         (71.43%)
+     2,431,809,471      stalled-cycles-frontend          #    0.50% frontend cycles idle        (71.43%)
+    50,868,465,033      branches                         #  522.549 M/sec                       (71.43%)
+        91,977,740      branch-misses                    #    0.18% of all branches             (71.43%)
+   427,458,382,842      L1-dcache-loads                  #    4.391 G/sec                       (71.43%)
+    22,041,827,729      L1-dcache-load-misses            #    5.16% of all L1-dcache accesses   (71.42%)
+
+     106.618224655 seconds time elapsed
+
+      96.935801000 seconds user
+       0.410761000 seconds sys
+-->
 
 Test 3: `nbody -n 10000 -i 2000`
-- CPU time: 723.588s
-- `Bodies::updateAcc`: 721.224 s, 99.7% of CPU time
-- `NtWriteFile`: 0.246 s, 0.0% of CPU time
+- seconds elapsed: 407.043
+- seconds user: 387.813
+- seconds sys: 0.882
+
+| Name                    | Measurement   |
+|-------------------------|---------------|
+| task-clock              | 388,697,891,980   (0.955 CPU utilized) |
+| context-switches        | 5,346           |
+| cpu-migrations          | 1,352        |
+| page-faults             | 523,400       |
+| instructions            | 4,515,537,265,957    |
+| cycles                  | 1,949,991,624,781  |
+| stalled-cycles-frontend | 7,586,346,631 (0.39%)   |
+| branches                | 202,444,836,085 |
+| branch-misses           | 261,752,003   (0.13%)  |
+| L1-dcache-loads         | 1,706,713,424,896  |
+| L1-dcache-load-misses   | 88,829,809,900 (5.20%)     |
+
+2.32 insn per cycle
+
+<!-- 
+ Performance counter stats for './nbody -n 10000 -i 2000 -l plummer':
+
+   388,697,891,980      task-clock                       #    0.955 CPUs utilized             
+             5,346      context-switches                 #   13.754 /sec                      
+             1,352      cpu-migrations                   #    3.478 /sec                      
+           523,400      page-faults                      #    1.347 K/sec                     
+ 4,515,537,265,957      instructions                     #    2.32  insn per cycle            
+                                                  #    0.00  stalled cycles per insn     (71.43%)
+ 1,949,991,624,781      cycles                           #    5.017 GHz                         (71.43%)
+     7,586,346,631      stalled-cycles-frontend          #    0.39% frontend cycles idle        (71.43%)
+   202,444,836,085      branches                         #  520.828 M/sec                       (71.43%)
+       261,752,003      branch-misses                    #    0.13% of all branches             (71.43%)
+ 1,706,713,424,896      L1-dcache-loads                  #    4.391 G/sec                       (71.43%)
+    88,829,809,900      L1-dcache-load-misses            #    5.20% of all L1-dcache accesses   (71.43%)
+
+     407.043615933 seconds time elapsed
+
+     387.813269000 seconds user
+       0.882075000 seconds sys
+
+-->
 
 ## Barnes-Hut Implementation
 
 
+# Aggregation
 
-
+![](./performance_info/CPU%20Utilization.png)
+![](./performance_info/Instructions.png)
+![](./performance_info/Stalled%20Cycles.png)
+![](./performance_info/Branch%20Misses.png)
+![](./performance_info/L1%20Cache%20Misses.png)
