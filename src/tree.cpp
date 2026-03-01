@@ -83,28 +83,19 @@ void Tree::internalAdd(int root, double mass, double x, double y, double z) {
 
         // add particles to children: use same principle as bitwise and
         // add the new particle
-        int child_index = 0;
-        if(x > rootNode.center_x) child_index += 1;
-        if(y > rootNode.center_y) child_index += 2;
-        if(z > rootNode.center_z) child_index += 4;
+        int child_index = getChildIndex(x, y, z, rootNode);
         
         this->internalAdd(first_child + child_index, mass, x, y, z);
 
         // add the old particle
-        child_index = 0;
-        if(old_x > rootNode.center_x) child_index += 1;
-        if(old_y > rootNode.center_y) child_index += 2;
-        if(old_z > rootNode.center_z) child_index += 4;
+        child_index = getChildIndex(old_x, old_y, old_z, rootNode); 
 
         this->internalAdd(first_child + child_index, old_mass, old_x, old_y, old_z);
 
         rootNode.first_child = first_child;
         rootNode.state = NodeState::Internal;
     } else if (rootNode.state == NodeState::Internal) {
-        int child_index = 0;
-        if(x > rootNode.center_x) child_index += 1;
-        if(y > rootNode.center_y) child_index += 2;
-        if(z > rootNode.center_z) child_index += 4;
+        int child_index = getChildIndex(x, y, z, rootNode);
 
         this->internalAdd(rootNode.first_child + child_index, mass, x, y, z);
 
@@ -126,4 +117,13 @@ void Tree::internalAdd(int root, double mass, double x, double y, double z) {
         rootNode.com_y = new_com_y / new_mass;
         rootNode.com_z = new_com_z / new_mass;
     }
-}; 
+}
+
+int Tree::getChildIndex(double x, double y, double z, const Node &node) {
+    int child_index = 0;
+    if(x > node.center_x) child_index += 1;
+    if(y > node.center_y) child_index += 2;
+    if(z > node.center_z) child_index += 4;
+
+    return child_index;
+};

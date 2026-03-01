@@ -48,6 +48,7 @@ class Tree {
         }
         
         void internalAdd(int root, double mass, double x, double y, double z);
+        int getChildIndex(double x, double y, double z, const Node& node);
 };
 
 #endif /* TREE_H */
