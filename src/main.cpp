@@ -52,7 +52,7 @@ void run_simulation(SimulationConfig config, std::vector<Snapshot>& snapshots){
         std::fill(b.ay.begin(), b.ay.end(), 0.0);
         std::fill(b.az.begin(), b.az.end(), 0.0);
 
-        b.updateAcc2(config.numParticles, dt);
+        b.updateAcc3(config.numParticles, dt);
 
         for(int i = 0; i < config.numParticles; i++){
             b.updateVel(i, dt);

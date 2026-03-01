@@ -35,15 +35,15 @@ class Tree {
 
         int allocateNode() { 
             int new_node = next_free++;
-            resetNode(pool[new_node]);
+            // resetNode(pool[new_node]);
             return new_node; 
         }       
         int allocate8Nodes() {
             int old_val = next_free;
             next_free += 8;
-            for(int i = 0; i < 8; i++){
-                resetNode(pool[old_val + i]);
-            }   
+            // for(int i = 0; i < 8; i++){
+            //     resetNode(pool[old_val + i]);
+            // }   
             return old_val;
         }
         

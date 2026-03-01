@@ -71,6 +71,9 @@ void Bodies::updateVel(int n, double dt)
     vz[n] += 0.5 *( old_az[n] + az[n] ) * dt;
 }
 
+// an update over updateAcc that exploits the symmetry of the force calculation to reduce
+// the amount of arithmetic done
+
 void Bodies::updateAcc2(int n, double dt)
 {
 
@@ -106,8 +109,51 @@ void Bodies::updateAcc2(int n, double dt)
     }
 }
 
+void Bodies::updateAcc3(int n, double dt) {
+    for(int i = 0; i < n; ++i){
+
+        double xi = x[i];
+        double yi = y[i];
+        double zi = z[i];
+
+        double mass_i = mass[i];
+
+        double aix = 0.0;
+        double aiy = 0.0;
+        double aiz = 0.0;
+
+        for(int j = i+1; j < n; ++j ){
+            double dx = x[j] - xi;
+            double dy = y[j] - yi;
+            double dz = z[j] - zi;
+
+            double r2 = dx*dx + dy*dy + dz*dz + eps2;
+            double inv_r = 1.0 / std::sqrt(r2);
+
+            double inv_r3 = inv_r * inv_r * inv_r;
+
+            double s_i = mass_i * inv_r3;
+            double s_j = mass[j] * inv_r3;
+
+            aix += s_j * dx;
+            aiy += s_j * dy;
+            aiz += s_j * dz;
+            
+            ax[j] -= s_i * dx;
+            ay[j] -= s_i * dy;
+            az[j] -= s_i * dz;
+        }
+        
+        // single write per i
+        ax[i] += aix;
+        ay[i] += aiy;
+        az[i] += aiz;
+    }
+}
+
 void Bodies::updateAccBH(int n, double dt, double map_size)
 {
+    // create the tree every iteration
     Tree tree(n, map_size, 0.5);
     for(int i = 0; i < n; i++){
         tree.add(this->mass[i], this->x[i], this->y[i], this->z[i]);
@@ -278,8 +324,7 @@ void Bodies::plummerInitializer(int n, double map_size, double dt, double q, dou
         vz[i] -= vz_avg;
     }
 
-    updateAcc2(n, dt);
-
+    updateAcc3(n, dt);
 }
 
 void Bodies::sphereInitializer(int n, double map_size, double dt, double q, double v0)
