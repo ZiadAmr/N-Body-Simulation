@@ -22,6 +22,7 @@ class Bodies
         void updateVel(int n, double dt);
 
         void updateAcc2(int n, double dt);
+        void updateAcc3(int n, double dt);
 
         void updateAccBH(int n, double dt, double map_size);
 

@@ -186,7 +186,7 @@ Test 3: `nbody -n 10000 -i 2000`
        0.874018000 seconds sys
  -->
 
-## Naive implementation w/ Optimized force calculation
+## Naive implementation w/ Optimized force calculation (o-nbody)
 
 Brute force implementation, exploiting the symmetry in the force calculation:
 
@@ -340,13 +340,162 @@ Test 3: `nbody -n 10000 -i 2000`
 
 -->
 
+## Naive implementation w/ Optimized force calculation and less memory writes (02-nbody)
+
+Optimization to improve memory locality
+
+Test 1: `nbody -n 1000 -i 2000`
+- seconds elapsed: 5.301
+- seconds user: 3.511
+- seconds sys: 0.097
+- 97.63% in `updateAcc3`
+
+| Name                    | Measurement   |
+|-------------------------|---------------|
+| task-clock              | 3,608,965,156    (0.681 CPU utilized) |
+| context-switches        | 64           |
+| cpu-migrations          | 13       |
+| page-faults             | 40,185      |
+| instructions            | 37,820,728,665    |
+| cycles                  | 17,884,445,932  |
+| stalled-cycles-frontend | 306,070,798 (1.71%)   |
+| branches                | 2,128,289,515 |
+| branch-misses           | 12,918,480  (0.61%)  |
+| L1-dcache-loads         | 14,360,191,797  |
+| L1-dcache-load-misses   | 612,369,117 (4.26%)     |
+
+2.11 insn per cycle
+
+<!-- 
+ Performance counter stats for './nbody -n 1000 -i 2000 -l plummer':
+
+     3,608,965,156      task-clock                       #    0.681 CPUs utilized             
+                64      context-switches                 #   17.734 /sec                      
+                13      cpu-migrations                   #    3.602 /sec                      
+            40,185      page-faults                      #   11.135 K/sec                     
+    37,820,728,665      instructions                     #    2.11  insn per cycle            
+                                                  #    0.01  stalled cycles per insn     (71.39%)
+    17,884,445,932      cycles                           #    4.956 GHz                         (71.36%)
+       306,070,798      stalled-cycles-frontend          #    1.71% frontend cycles idle        (71.43%)
+     2,128,289,515      branches                         #  589.723 M/sec                       (71.48%)
+        12,918,480      branch-misses                    #    0.61% of all branches             (71.46%)
+    14,360,191,797      L1-dcache-loads                  #    3.979 G/sec                       (71.44%)
+       612,369,117      L1-dcache-load-misses            #    4.26% of all L1-dcache accesses   (71.43%)
+
+       5.300972542 seconds time elapsed
+
+       3.511560000 seconds user
+       0.097857000 seconds sys
+
+-->
+
+Test 2: `nbody -n 5000 -i 2000`
+- seconds elapsed: 96.298
+- seconds user: 86.652
+- seconds sys: 0.433
+- 99.02% in `updateAcc3`
+
+| Name                    | Measurement   |
+|-------------------------|---------------|
+| task-clock              | 87,086,947,765   (0.904 CPU utilized) |
+| context-switches        | 1,257           |
+| cpu-migrations          | 287       |
+| page-faults             | 261,777     |
+| instructions            | 930,314,182,054   |
+| cycles                  | 436,593,930,682 |
+| stalled-cycles-frontend | 2,396,424,250 (0.55%)   |
+| branches                | 50,839,152,080 |
+| branch-misses           | 88,912,727   (0.17%)  |
+| L1-dcache-loads         | 352,515,995,818 |
+| L1-dcache-load-misses   | 22,090,166,749  (6.27%)     |
+
+2.13 insn per cycle
+
+<!-- 
+ Performance counter stats for './nbody -n 5000 -i 2000 -l plummer':
+
+    87,086,947,765      task-clock                       #    0.904 CPUs utilized             
+             1,257      context-switches                 #   14.434 /sec                      
+               287      cpu-migrations                   #    3.296 /sec                      
+           261,777      page-faults                      #    3.006 K/sec                     
+   930,314,182,054      instructions                     #    2.13  insn per cycle            
+                                                  #    0.00  stalled cycles per insn     (71.43%)
+   436,593,930,682      cycles                           #    5.013 GHz                         (71.43%)
+     2,396,424,250      stalled-cycles-frontend          #    0.55% frontend cycles idle        (71.43%)
+    50,839,152,080      branches                         #  583.775 M/sec                       (71.43%)
+        88,912,727      branch-misses                    #    0.17% of all branches             (71.43%)
+   352,515,995,818      L1-dcache-loads                  #    4.048 G/sec                       (71.42%)
+    22,090,166,749      L1-dcache-load-misses            #    6.27% of all L1-dcache accesses   (71.43%)
+
+      96.298073158 seconds time elapsed
+
+      86.652458000 seconds user
+       0.433855000 seconds sys
+ -->
+
+Test 3: `nbody -n 10000 -i 2000`
+- seconds elapsed: 365.180
+- seconds user: 345.593
+- seconds sys: 0.869
+- 99.40% in `updateAcc3`
+
+| Name                    | Measurement   |
+|-------------------------|---------------|
+| task-clock              | 346,467,229,874    (0.949 CPU utilized) |
+| context-switches        | 4,816           |
+| cpu-migrations          | 1,101       |
+| page-faults             | 523,399     |
+| instructions            | 3,714,796,762,225   |
+| cycles                  | 1,739,149,617,873  |
+| stalled-cycles-frontend | 7,153,172,588 (0.41%)   |
+| branches                | 202,311,458,920|
+| branch-misses           | 248,027,993    (0.12%)  |
+| L1-dcache-loads         | 1,406,596,023,341 |
+| L1-dcache-load-misses   | 88,457,000,521 (6.29%)     |
+
+2.14 insn per cycle
+
+
+<!--  1,706,713,424,896 / 1,406,596,023,341 vs 88,829,809,900  / 88,457,000,521 -->
+<!-- 
+ Performance counter stats for './nbody -n 10000 -i 2000 -l plummer':
+
+   346,467,229,874      task-clock                       #    0.949 CPUs utilized             
+             4,816      context-switches                 #   13.900 /sec                      
+             1,101      cpu-migrations                   #    3.178 /sec                      
+           523,399      page-faults                      #    1.511 K/sec                     
+ 3,714,796,762,225      instructions                     #    2.14  insn per cycle            
+                                                  #    0.00  stalled cycles per insn     (71.43%)
+ 1,739,149,617,873      cycles                           #    5.020 GHz                         (71.43%)
+     7,153,172,588      stalled-cycles-frontend          #    0.41% frontend cycles idle        (71.43%)
+   202,311,458,920      branches                         #  583.927 M/sec                       (71.43%)
+       248,027,993      branch-misses                    #    0.12% of all branches             (71.43%)
+ 1,406,596,023,341      L1-dcache-loads                  #    4.060 G/sec                       (71.43%)
+    88,457,000,521      L1-dcache-load-misses            #    6.29% of all L1-dcache accesses   (71.43%)
+
+     365.180530198 seconds time elapsed
+
+     345.593602000 seconds user
+       0.869071000 seconds sys
+-->
+
 ## Barnes-Hut Implementation
+
 
 
 # Aggregation
 
-![](./performance_info/CPU%20Utilization.png)
+Comparing between the base n-body simulation and with the optimized force calculation. The Instructions are reduced, from 6,268,130,645 to 4,031,250,441 at 1000 particles. The number of instructions increases at the same rate meaning that the optimized calculation results in fewer instructions.
+
+However, the downside of this optimization method is that it increases the percentage of stalled cycles, branch misses, and L1 cache misses. The decrease in instructions offsets this difference and leads to improved performance. This leads to an improvement in performance, where the performance improvement factor increases with number of particles. 
+
+This increase in stalled cycles, branch misses, and L1 cache misses is a result of more scattered writes, more complex control flow, worse memory locality and harder vectorization. 
+
+This observation lead us to implement o2-nbody, which reduced the number of memory access. This may lead to a higher percentage of cache misses, but the number of misses remains the same. This leads to a small but noticeable improvement in performance.
+
+![](./performance_info/Seconds%20Elapsed.png)
 ![](./performance_info/Instructions.png)
+![](./performance_info/CPU%20Utilization.png)
 ![](./performance_info/Stalled%20Cycles.png)
 ![](./performance_info/Branch%20Misses.png)
 ![](./performance_info/L1%20Cache%20Misses.png)
