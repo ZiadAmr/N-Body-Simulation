@@ -481,8 +481,6 @@ Test 3: `nbody -n 10000 -i 2000`
 
 ## Barnes-Hut Implementation
 
-
-
 # Aggregation
 
 Comparing between the base n-body simulation and with the optimized force calculation. The Instructions are reduced, from 6,268,130,645 to 4,031,250,441 at 1000 particles. The number of instructions increases at the same rate meaning that the optimized calculation results in fewer instructions.

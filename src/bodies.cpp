@@ -153,6 +153,7 @@ void Bodies::updateAcc3(int n, double dt) {
 
 void Bodies::updateAccBH(int n, double dt, double map_size)
 {
+    // create the tree every iteration
     Tree tree(n, map_size, 0.5);
     for(int i = 0; i < n; i++){
         tree.add(this->mass[i], this->x[i], this->y[i], this->z[i]);
