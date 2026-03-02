@@ -35,7 +35,9 @@ void run_simulation(SimulationConfig config, std::vector<Snapshot>& snapshots){
     double dt = config.dt;
     int max_iter = config.iterations;
 
-    Bodies b(config.layout, config.numParticles, config.mapsize, config.dt, config.q, config.v0);
+    std::vector<Node> pool;
+
+    Bodies b(config.layout, pool, config.numParticles, config.mapsize, config.dt, config.q, config.v0);
 
     for(int iteration = 0; iteration < max_iter; iteration++){
 
@@ -52,7 +54,8 @@ void run_simulation(SimulationConfig config, std::vector<Snapshot>& snapshots){
         std::fill(b.ay.begin(), b.ay.end(), 0.0);
         std::fill(b.az.begin(), b.az.end(), 0.0);
 
-        b.updateAcc3(config.numParticles, dt);
+        // b.updateAcc3(config.numParticles, dt);
+        b.updateAccBH(config.numParticles, dt, config.mapsize, pool);
 
         for(int i = 0; i < config.numParticles; i++){
             b.updateVel(i, dt);

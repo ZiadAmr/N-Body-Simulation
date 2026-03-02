@@ -20,5 +20,6 @@ add_executable(nbody
     src/main.cpp
     src/bodies.cpp
     src/tree.cpp
+    src/node.cpp
 )
 

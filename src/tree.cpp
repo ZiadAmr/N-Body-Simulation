@@ -1,5 +1,8 @@
 #include "tree.h"
 
+#include <iostream>
+#include <cassert>
+
 /*
     STEPS:
         - Start at root
@@ -10,10 +13,8 @@
 */
 
 void Tree::add(double mass, double x, double y, double z) {
-    int root = 0;
-    this->internalAdd(root, mass, x, y, z);
+    this->internalAdd(0, mass, x, y, z);
 }
-
 
 /*
     How the BITWISE AND works
@@ -41,10 +42,40 @@ void Tree::add(double mass, double x, double y, double z) {
     0 <= child_index <= 7, corresponding to the child
 */
 
-void Tree::internalAdd(int root, double mass, double x, double y, double z) {
+void Tree::internalAdd(int root, double mass, double x, double y, double z, int depth) {
+
+    if(depth > 1000) {
+        std::cerr << "Too deep" << std::endl;
+        exit(1);
+    }
+
     Node& rootNode = pool[root];
+
+    if(rootNode.length <= min_cell_size) {
+        double total_mass = rootNode.mass + mass;
+        rootNode.com_x = (rootNode.com_x * rootNode.mass + x * mass) / total_mass;
+        rootNode.com_y = (rootNode.com_y * rootNode.mass + y * mass) / total_mass;
+        rootNode.com_z = (rootNode.com_z * rootNode.mass + z * mass) / total_mass;
+        rootNode.mass = total_mass;
+        rootNode.state = NodeState::Leaf;
+        return;
+    }
+
+    double dx = rootNode.com_x - x;
+    double dy = rootNode.com_y - y;
+    double dz = rootNode.com_z - z;
+    double dist2 = dx*dx + dy*dy + dz*dz;
+    
+    if(dist2 < 1e-12) {
+        rootNode.mass += mass;
+        rootNode.com_x = (rootNode.com_x * (rootNode.mass - mass) + x * mass) / rootNode.mass;
+        rootNode.com_y = (rootNode.com_y * (rootNode.mass - mass) + y * mass) / rootNode.mass;
+        rootNode.com_z = (rootNode.com_z * (rootNode.mass - mass) + z * mass) / rootNode.mass;
+        rootNode.state = NodeState::Leaf;
+        return;
+    }
+
     if(rootNode.state == NodeState::Empty) { // add to current node
-        
         rootNode.mass = mass;
         
         rootNode.com_x = x;
@@ -54,11 +85,12 @@ void Tree::internalAdd(int root, double mass, double x, double y, double z) {
         rootNode.state = NodeState::Leaf;
     } else if (rootNode.state == NodeState::Leaf) {
         // create children
-        int first_child = this->allocate8Nodes();
-        double quarter = rootNode.length / 4;
+        int first_child = allocate8Nodes();
+        double quarter = rootNode.length / 4.0;
         
         for (int i = 0; i < 8; i++) {
-
+            // std::cout << "Accessing child " << first_child + i << "in length " << max_nodes << std::endl;
+            assert(first_child + i >= 0 && first_child + i < pool.size());
             Node& child = pool[first_child + i];
 
             child.length = rootNode.length / 2.0;
@@ -75,47 +107,55 @@ void Tree::internalAdd(int root, double mass, double x, double y, double z) {
         double old_y = rootNode.com_y;
         double old_z = rootNode.com_z;
 
-        // set up the new values for the root
-        rootNode.mass = old_mass + mass;
-        rootNode.com_x = (old_x * old_mass + x * mass) / rootNode.mass;
-        rootNode.com_y = (old_y * old_mass + y * mass) / rootNode.mass;
-        rootNode.com_z = (old_z * old_mass + z * mass) / rootNode.mass;
-
         // add particles to children: use same principle as bitwise and
         // add the new particle
         int child_index = getChildIndex(x, y, z, rootNode);
-        
-        this->internalAdd(first_child + child_index, mass, x, y, z);
+        internalAdd(first_child + child_index, mass, x, y, z, depth+1);
 
         // add the old particle
         child_index = getChildIndex(old_x, old_y, old_z, rootNode); 
+        internalAdd(first_child + child_index, old_mass, old_x, old_y, old_z, depth + 1);
 
-        this->internalAdd(first_child + child_index, old_mass, old_x, old_y, old_z);
+        double new_mass = 0.0, cx=0, cy=0, cz=0;
+        for(int i = 0; i < 8; i++) {
+            assert(first_child + i >= 0 && first_child + i < pool.size());
+            Node& c = pool[first_child+i];
+            if(c.state == NodeState::Empty) continue;
+
+            new_mass += c.mass;
+            cx += c.mass * c.com_x;
+            cy += c.mass * c.com_y;
+            cz += c.mass * c.com_z;
+        }
+        rootNode.mass = new_mass;
+        rootNode.com_x = cx / new_mass;
+        rootNode.com_y = cy / new_mass;
+        rootNode.com_z = cz / new_mass;
 
         rootNode.first_child = first_child;
         rootNode.state = NodeState::Internal;
     } else if (rootNode.state == NodeState::Internal) {
         int child_index = getChildIndex(x, y, z, rootNode);
 
-        this->internalAdd(rootNode.first_child + child_index, mass, x, y, z);
+        internalAdd(rootNode.first_child + child_index, mass, x, y, z, depth + 1);
 
-        double new_mass = 0;
-        double new_com_x = 0;
-        double new_com_y = 0;
-        double new_com_z = 0;
+        double new_mass = 0.0, cx=0, cy=0, cz=0;
         for(int i = rootNode.first_child; i < rootNode.first_child + 8; i++){
-            if(pool[i].state == NodeState::Empty) continue;;
+                assert(i>= 0 && i < pool.size());
+                Node& c = pool[i];
 
-            new_mass += pool[i].mass;
-            new_com_x += pool[i].mass * pool[i].com_x;
-            new_com_y += pool[i].mass * pool[i].com_y;
-            new_com_z += pool[i].mass * pool[i].com_z;
+                if(c.state == NodeState::Empty) continue;
+
+                new_mass += c.mass;
+                cx += c.mass * c.com_x;
+                cy += c.mass * c.com_y;
+                cz += c.mass * c.com_z;
         }
 
         rootNode.mass = new_mass;
-        rootNode.com_x = new_com_x / new_mass;
-        rootNode.com_y = new_com_y / new_mass;
-        rootNode.com_z = new_com_z / new_mass;
+        rootNode.com_x = cx / new_mass;
+        rootNode.com_y = cy / new_mass;
+        rootNode.com_z = cz / new_mass;
     }
 }
 
@@ -127,3 +167,46 @@ int Tree::getChildIndex(double x, double y, double z, const Node &node) {
 
     return child_index;
 };
+
+std::tuple<double, double, double> Tree::traverse(double mass, double x, double y, double z)
+{   
+    double ax = 0, ay = 0, az = 0;
+
+    internalTraverse(0, mass, x, y, z, ax, ay, az);
+
+    return {ax, ay, az};
+}
+
+void Tree::internalTraverse(int root, double mass, double x, double y, double z, double& ax, double& ay, double& az)
+{
+    Node& rootNode = pool[root];
+    
+    double l = rootNode.length;
+
+    double dx = rootNode.com_x - x;
+    double dy = rootNode.com_y - y;
+    double dz = rootNode.com_z - z;
+    
+    double r2 = dx*dx + dy*dy + dz*dz + eps2;
+
+    if(rootNode.state == NodeState::Empty) return;
+
+    if( l * l < theta * theta * r2 || rootNode.state == NodeState::Leaf) {
+        double inv_r = 1.0 / sqrt(r2);
+        double inv_r3 = inv_r * inv_r * inv_r;
+
+        double s = rootNode.mass * inv_r3;
+        
+        ax += s * dx;
+        ay += s * dy;
+        az += s * dz;
+    } else {
+        int firstChild = rootNode.first_child;
+        if (rootNode.first_child == -1)
+            return;
+
+        for (int i = 0; i < 8; ++i)
+            internalTraverse(rootNode.first_child + i, mass, x, y, z, ax, ay, az);   
+    }
+}
+

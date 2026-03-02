@@ -5,17 +5,22 @@
 #include <random>
 #include <string>
 
-Bodies::Bodies(std::string initType, int n, double map_size, double dt, double q, double v0)
+#include "tree.h"
+
+
+Bodies::Bodies(std::string initType, std::vector<Node>& pool, int n, double map_size, double dt, double q, double v0)
     :x(n), y(n), z(n),
     vx(n), vy(n), vz(n),
     ax(n), ay(n), az(n),
     old_ax(n), old_ay(n), old_az(n),
     mass(n)
 {
-    if(initType == "cube") cubeInitializer(n, map_size, dt, q, v0);
-    else if (initType == "plummer") plummerInitializer(n, map_size, dt, q, v0);
-    else if (initType == "sphere") sphereInitializer(n, map_size, dt, q, v0);
-    else if (initType == "disk") diskInitializer(n, 0.05*map_size,  map_size, dt, q, v0);
+    pool.resize(n * 8);
+
+    if(initType == "cube") cubeInitializer(n, map_size, dt, q, v0, pool);
+    else if (initType == "plummer") plummerInitializer(n, map_size, dt, q, v0, pool);
+    else if (initType == "sphere") sphereInitializer(n, map_size, dt, q, v0, pool);
+    else if (initType == "disk") diskInitializer(n, 0.05*map_size,  map_size, dt, q, v0, pool);
 }
 
 void Bodies::updatePos(int n, double dt)
@@ -25,8 +30,6 @@ void Bodies::updatePos(int n, double dt)
     x[n] += vx[n] * dt + 0.5 * ax[n] * dt * dt; 
     y[n] += vy[n] * dt + 0.5 * ay[n] * dt * dt;
     z[n] += vz[n] * dt + 0.5 * az[n] * dt * dt;
-
-
 }
 
 void Bodies::updateAcc(int n, double dt) // execute after updatePos has been executed for all bodies
@@ -77,7 +80,7 @@ void Bodies::updateVel(int n, double dt)
 void Bodies::updateAcc2(int n, double dt)
 {
 
-    for(int i = 0; i < n; ++i){
+    for(int i = 0; i < n; i++){
 
         double xi = x[i];
         double yi = y[i];
@@ -110,7 +113,7 @@ void Bodies::updateAcc2(int n, double dt)
 }
 
 void Bodies::updateAcc3(int n, double dt) {
-    for(int i = 0; i < n; ++i){
+    for(int i = 0; i < n; i++){
 
         double xi = x[i];
         double yi = y[i];
@@ -151,16 +154,24 @@ void Bodies::updateAcc3(int n, double dt) {
     }
 }
 
-void Bodies::updateAccBH(int n, double dt, double map_size)
+void Bodies::updateAccBH(int n, double dt, double map_size, std::vector<Node>& pool)
 {
     // create the tree every iteration
-    Tree tree(n, map_size, 0.5);
+    Tree tree(pool, n, map_size, this->eps2, 0.5);
     for(int i = 0; i < n; i++){
         tree.add(this->mass[i], this->x[i], this->y[i], this->z[i]);
     }
+
+    // traverse tree for every node
+    for(int i = 0; i < n; i++){
+        auto tuple = tree.traverse(this->mass[i], this->x[i], this->y[i], this->z[i]);
+        ax[i] += std::get<0>(tuple);
+        ay[i] += std::get<1>(tuple);
+        az[i] += std::get<2>(tuple);
+    }
 }
 
-void Bodies::cubeInitializer(int n, double map_size, double dt, double q, double v0)
+void Bodies::cubeInitializer(int n, double map_size, double dt, double q, double v0, std::vector<Node>& pool)
 {
     std::random_device rd; 
     std::mt19937 gen(rd());
@@ -172,10 +183,6 @@ void Bodies::cubeInitializer(int n, double map_size, double dt, double q, double
     double vz_avg = 0; 
 
     double x_avg = 0, y_avg = 0, z_avg = 0;
-
-    // double x_avg = 0;
-    // double y_avg = 0;
-    // double z_avg = 0; 
 
     for(int i = 0; i < n; i++){
         x[i] = posDistrib(gen);
@@ -244,10 +251,11 @@ void Bodies::cubeInitializer(int n, double map_size, double dt, double q, double
         y[i] -= y_avg;
         z[i] -= z_avg;
     }
-    updateAcc2(n, dt);
+    
+    updateAccBH(n, dt, map_size, pool);
 }
 
-void Bodies::plummerInitializer(int n, double map_size, double dt, double q, double v0)
+void Bodies::plummerInitializer(int n, double map_size, double dt, double q, double v0, std::vector<Node>& pool)
 {
     std::random_device rd; 
     std::mt19937 gen(rd());
@@ -324,10 +332,11 @@ void Bodies::plummerInitializer(int n, double map_size, double dt, double q, dou
         vz[i] -= vz_avg;
     }
 
-    updateAcc3(n, dt);
+    updateAccBH(n, dt, map_size, pool);
+    std::cout << "init complete" << std::endl;
 }
 
-void Bodies::sphereInitializer(int n, double map_size, double dt, double q, double v0)
+void Bodies::sphereInitializer(int n, double map_size, double dt, double q, double v0, std::vector<Node>& pool)
 {
     std::random_device rd; 
     std::mt19937 gen(rd());
@@ -402,13 +411,10 @@ void Bodies::sphereInitializer(int n, double map_size, double dt, double q, doub
         vz[i] -= vz_avg;
     }
 
-    updateAcc2(n, dt);
-    // for(int i = 0; i < n; i++){
-    //     updateAcc(i, dt);
-    // }
+    updateAccBH(n, dt, map_size, pool);
 }
 
-void Bodies::diskInitializer(int n, double disk_height, double disk_radius, double dt, double q, double v0)
+void Bodies::diskInitializer(int n, double disk_height, double disk_radius, double dt, double q, double v0, std::vector<Node>& pool)
 {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -507,5 +513,5 @@ void Bodies::diskInitializer(int n, double disk_height, double disk_radius, doub
     //     vy[i]*=scale;
     //     vz[i]*=scale;
     // }
-    updateAcc2(n, dt);
+    updateAccBH(n, dt, map_size, pool);
 }
