@@ -1,58 +1,17 @@
 # Performance
-This file details the changes in perfomance of the application over the development phase with the following test conditions using the perf tool:
-
-Test 1:
-- 
-
+This file details the changes in perfomance of the application over the development phase using the perf tool
 <!-- sudo perf stat -d ./nbody -n 1000 -i 2000 -l plummer -->
 <!-- sudo perf record -F 999 -g ./nbody -n 1000 -i 2000 -l plummer  -->
 
-M = 1 for all particles
 
-plummer sphere
-
-N = 1000
-
-2000 timesteps
-
-dt = 0.0005
-
-call with flags `-O3 -g` for compiler performance optimization and profiling
-
-Test 2
--
-M = 1 for all particles
-
-plummer sphere
-
-N = 5000
-
-2000 timesteps
-
-dt = 0.0005
-
-call with flags `-O3 -g` for compiler performance optimization and profiling
-
-Test 3:
-- 
-M = 1 for all particles
-
-plummer sphere
-
-N = 10000
-
-2000 timesteps
-
-dt = 0.0005
-
-call with flags `-O3 -g` for compiler performance optimization and profiling
+The code is compiled with flags `-O3 -march=native -g -fno-omit-frame-pointer` for compiler performance optimization and profiling
 
 ## Naive Implementation
 
 
 brute force implementation, no optimizations (except for batching the file writes at the end to reduce system calls)
 
-Test 1: `nbody -n 1000 -i 2000`
+Test 1: `nbody -n 1000 -i 2000 -l plummer`
 
 - seconds elapsed: 8.075
 - seconds user: 6.203
@@ -97,7 +56,7 @@ Test 1: `nbody -n 1000 -i 2000`
        0.075018000 seconds sys
 -->
 
-Test 2: `nbody -n 5000 -i 2000`
+Test 2: `nbody -n 5000 -i 2000 -l plummer`
 
 - seconds elapsed: 163.962
 - seconds user: 154.414
@@ -142,7 +101,7 @@ Test 2: `nbody -n 5000 -i 2000`
        0.441203000 seconds sys
  -->
 
-Test 3: `nbody -n 10000 -i 2000`
+Test 3: `nbody -n 10000 -i 2000 -l plummer`
 - seconds elapsed: 648.533
 - seconds user: 628.679
 - second sys: 0.874
@@ -204,7 +163,7 @@ we do:
         for j > i in n:
 ```
 
-Test 1: `nbody -n 1000 -i 2000`
+Test 1: `nbody -n 1000 -i 2000 -l plummer`
 - seconds elapsed: 5.959
 - seconds user: 3.931
 - seconds sys: 0.1
@@ -250,7 +209,7 @@ Test 1: `nbody -n 1000 -i 2000`
        0.100993000 seconds sys
 -->
 
-Test 2: `nbody -n 5000 -i 2000`
+Test 2: `nbody -n 5000 -i 2000 -l plummer`
 - seconds elapsed: 106.935
 - seconds user: 96.935
 - seconds sys: 0.41
@@ -296,7 +255,7 @@ Test 2: `nbody -n 5000 -i 2000`
        0.410761000 seconds sys
 -->
 
-Test 3: `nbody -n 10000 -i 2000`
+Test 3: `nbody -n 10000 -i 2000 -l plummer`
 - seconds elapsed: 407.043
 - seconds user: 387.813
 - seconds sys: 0.882
@@ -344,7 +303,7 @@ Test 3: `nbody -n 10000 -i 2000`
 
 Optimization to improve memory locality
 
-Test 1: `nbody -n 1000 -i 2000`
+Test 1: `nbody -n 1000 -i 2000 -l plummer`
 - seconds elapsed: 5.301
 - seconds user: 3.511
 - seconds sys: 0.097
@@ -389,7 +348,7 @@ Test 1: `nbody -n 1000 -i 2000`
 
 -->
 
-Test 2: `nbody -n 5000 -i 2000`
+Test 2: `nbody -n 5000 -i 2000 -l plummer`
 - seconds elapsed: 96.298
 - seconds user: 86.652
 - seconds sys: 0.433
@@ -433,7 +392,7 @@ Test 2: `nbody -n 5000 -i 2000`
        0.433855000 seconds sys
  -->
 
-Test 3: `nbody -n 10000 -i 2000`
+Test 3: `nbody -n 10000 -i 2000 -l plummer`
 - seconds elapsed: 365.180
 - seconds user: 345.593
 - seconds sys: 0.869

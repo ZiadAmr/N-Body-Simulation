@@ -23,7 +23,7 @@ A high-performance N-Body simulation implemented in C++, designed to model the d
 3. cd into bin directory
 4. Run the following instructions:
 ```
-    cmake -G "MinGW Makefiles" .. 
+    cmake .. 
     cmake --build .
 ```
 
