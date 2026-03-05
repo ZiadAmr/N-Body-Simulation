@@ -11,7 +11,7 @@ class Tree {
     public:
         // allocates the node pool and creates the root node
         Tree(std::vector<Node>& poolRef, size_t particle_count, int length, double eps2, double theta=0.5)
-        :max_nodes(particle_count * 8), eps2(eps2), pool(poolRef)
+        :max_nodes(particle_count * 8), eps2(eps2), pool(poolRef), theta2(theta*theta)
         {
             // pool.resize(max_nodes);
 
@@ -35,10 +35,10 @@ class Tree {
 
         size_t next_free = 0;
         size_t max_nodes;
-        double min_cell_size = 1e-5;
+        double min_cell_size = 1e-6;
 
         double eps2;
-        double theta;
+        double theta2;
 
         int allocateNode() { 
             int new_node = next_free++;

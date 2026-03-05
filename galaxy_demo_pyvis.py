@@ -6,7 +6,7 @@ import imageio
 # CONFIG
 # =========================
 filename = "bin/snapshots.bin"
-num_particles = 1000
+num_particles = 10000
 frame_skip = 3
 fps = 60
 output_file = "galaxy_demo.mp4"

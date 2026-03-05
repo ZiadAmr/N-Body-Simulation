@@ -191,22 +191,27 @@ void Tree::internalTraverse(int root, double mass, double x, double y, double z,
 
     if(rootNode.state == NodeState::Empty) return;
 
-    if( l * l < theta * theta * r2 || rootNode.state == NodeState::Leaf) {
-        double inv_r = 1.0 / sqrt(r2);
-        double inv_r3 = inv_r * inv_r * inv_r;
+    if( l * l < theta2 * r2 || rootNode.state == NodeState::Leaf) {
+        // if not the same particle, calculate
+        if(r2 != eps2){
+            double inv_r = 1.0 / sqrt(r2);
+            double inv_r3 = inv_r * inv_r * inv_r;
 
-        double s = rootNode.mass * inv_r3;
-        
-        ax += s * dx;
-        ay += s * dy;
-        az += s * dz;
+            double s = rootNode.mass * inv_r3;
+            
+            ax += s * dx;
+            ay += s * dy;
+            az += s * dz;
+        }
     } else {
         int firstChild = rootNode.first_child;
-        if (rootNode.first_child == -1)
+        if (firstChild == -1)
             return;
 
-        for (int i = 0; i < 8; ++i)
-            internalTraverse(rootNode.first_child + i, mass, x, y, z, ax, ay, az);   
+        for (int i = 0; i < 8; ++i){
+            if(pool[rootNode.first_child + i].state != NodeState::Empty)
+                internalTraverse(rootNode.first_child + i, mass, x, y, z, ax, ay, az);   
+        }
     }
 }
 

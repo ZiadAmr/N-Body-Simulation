@@ -15,7 +15,7 @@ Bodies::Bodies(std::string initType, std::vector<Node>& pool, int n, double map_
     old_ax(n), old_ay(n), old_az(n),
     mass(n)
 {
-    pool.resize(n * 8);
+    if(pool.size() == 0) pool.resize(n * 20);
 
     if(initType == "cube") cubeInitializer(n, map_size, dt, q, v0, pool);
     else if (initType == "plummer") plummerInitializer(n, map_size, dt, q, v0, pool);
@@ -169,6 +169,8 @@ void Bodies::updateAccBH(int n, double dt, double map_size, std::vector<Node>& p
         ay[i] += std::get<1>(tuple);
         az[i] += std::get<2>(tuple);
     }
+
+    std::cout << "[" << pool[0].com_x << " " << pool[1].com_y << " " << pool[2].com_z << " ]" << std::endl;
 }
 
 void Bodies::cubeInitializer(int n, double map_size, double dt, double q, double v0, std::vector<Node>& pool)

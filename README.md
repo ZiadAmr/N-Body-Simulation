@@ -56,7 +56,9 @@ https://github.com/user-attachments/assets/6bb998d4-ef7c-43fd-bf92-3e9ef505f9fa
 ## Future Extensions
 
 - Implement Barnes-Hut algorithm for improved performance on large particle counts
+    - Morton ordering
 - Add collision detection and merging for astrophysical realism 
+- Multipole Acceptance Criterion optimization + node skipping.
 - Implement initial condition modes:
     - Hernquist Profile
     - Isothermal Sphere
