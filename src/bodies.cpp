@@ -170,7 +170,7 @@ void Bodies::updateAccBH(int n, double dt, double map_size, std::vector<Node>& p
         az[i] += std::get<2>(tuple);
     }
 
-    std::cout << "[" << pool[0].com_x << " " << pool[1].com_y << " " << pool[2].com_z << " ]" << std::endl;
+    // std::cout << "[" << pool[0].com_x << " " << pool[1].com_y << " " << pool[2].com_z << " ]" << std::endl;
 }
 
 void Bodies::cubeInitializer(int n, double map_size, double dt, double q, double v0, std::vector<Node>& pool)
